@@ -1,0 +1,249 @@
+Project Context Document
+Collision course! 🛰️💥
+Orbital Collision Avoidance Game
+Overview
+
+This is a browser-based simulation game where players plan and execute manoeuvres to avoid a predicted collision (TCA – Time of Closest Approach). The core gameplay loop:
+
+A conjunction event is generated.
+
+A probability heatmap (MTS) shows collision risk vs:
+
+X-axis: burn time
+
+Y-axis: fuel usage (Δv), centered at 0.
+
+Player selects burn timing and Δv.
+
+Player locks manoeuvre.
+
+Time fast-forwards until TCA.
+
+Collision probability is sampled.
+
+Outcome banner displayed.
+
+Next event begins after a gap.
+
+Core Architecture
+Files
+
+game.js → Simulation logic, state management, config (cfg)
+
+render.js → Canvas rendering (satellite, heatmap, HUD, banners)
+
+mts.js → Probability grid generation + forward simulation
+
+input.js → Keyboard input handling
+
+main.js → Game loop, pause logic, start screen, fast-forward
+
+leaderboard.js → Score tracking
+
+util.js → Helpers
+
+render helpers → Drawing utilities
+
+Important Systems Added / Modified
+1. Config-Driven Design
+
+Game tuning is centralized in cfg inside game.js.
+
+Key adjustable gameplay variables:
+
+FUEL_MAX
+
+DV_MAX
+
+DV_STEP
+
+DV_COST_PER_UNIT
+
+TCA_RANGE
+
+FAST_FORWARD_MULT
+
+SAT_DRAG
+
+TH_BLUE, TH_YELLOW
+
+START_PAUSE_SEC
+
+HUD layout:
+
+HUD_WIDTH_FRAC
+
+SAT_X_FRAC
+
+All balancing should be done through cfg before touching logic.
+
+2. Start Pause System
+
+After clicking Begin:
+
+Game pauses for START_PAUSE_SEC
+
+Plot visible
+
+Simulation frozen (updateGame not called)
+
+Input disabled
+
+Countdown shown in instruction area
+
+Controlled by:
+
+START_PAUSE_SEC
+
+st.pauseRemainingMs
+
+inputLocked flag in state
+
+3. Fast Forward System
+
+After manoeuvre is locked:
+
+Simulation dt multiplied by FAST_FORWARD_MULT
+
+Debris, score, NOW line all move faster
+
+Notice banner shows:
+>> manoeuvre plan locked in, fast-forwarding time
+
+Notice persists until TCA
+
+Important:
+
+Outcome banner duration is based on simulation time (st.t), so fast-forward shortens real-time display.
+
+4. Probability Model (MTS)
+
+Grid dimensions:
+
+GRID_X (time resolution)
+
+GRID_Y (dv resolution)
+
+Axes:
+
+X-axis: time (0 → TCA)
+
+Y-axis: fuel usage (0 centered)
+
+Important behavior:
+
+Small dv (near 0) forced to max probability via mid-stripe logic.
+
+Risk scaling influenced by:
+
+P0
+
+SIGMA
+
+K_ALONGTRACK
+
+Heatmap colors controlled only by:
+
+TH_BLUE
+
+TH_YELLOW
+
+5. UI / HUD Improvements Implemented
+
+Background panel added to HUD
+
+Title: “Mission Control”
+
+Improved typography hierarchy
+
+Risk color-coded dynamically
+
+Axes added to heatmap
+
+“Collision (TCA)” vertical marker added
+
+Outcome banner supports multi-line (fuel remaining)
+
+Countdown replaces instruction text during start pause
+
+Known Behavioral Interactions
+Fast-forward affects:
+
+Simulation time (st.t)
+
+Score accumulation
+
+Outcome banner lifetime (shorter in real time)
+
+dv = 0 edge case:
+
+Can result in very high collision probability due to forced mid-stripe
+
+Not a render bug
+
+NaN offset bug:
+
+Typically caused by invalid dt or FAST_FORWARD_MULT undefined
+
+Protect by ensuring multiplier defaults to numeric
+
+How to Tune Difficulty
+Easier:
+
+Increase FUEL_MAX
+
+Decrease DV_COST_PER_UNIT
+
+Increase DV_MAX
+
+Increase TH_BLUE
+
+Lower P0
+
+Harder:
+
+Reduce FUEL_MAX
+
+Increase DV_COST_PER_UNIT
+
+Reduce TCA_RANGE
+
+Lower TH_BLUE
+
+Increase P0
+
+Current Design Philosophy
+
+The game balances:
+
+Strategic planning (heatmap reading)
+
+Limited resource management (fuel)
+
+Timing precision
+
+Risk interpretation
+
+It intentionally:
+
+Encourages non-zero manoeuvres
+
+Rewards efficient burns
+
+Uses visual clarity over physical realism
+
+Recommendations for Next Developer
+
+Keep all tuning in cfg.
+
+If modifying burn physics, update both:
+
+game.js (actual burn)
+
+mts.js (forward sim for heatmap)
+
+Avoid tying UI durations to simulation time unless intentional.
+
+Validate all multipliers (prevent NaN propagation).
+
+Use config toggles rather than hardcoding new mechanics.

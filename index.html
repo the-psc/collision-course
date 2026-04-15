@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Collision Course! 🛰️💥</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="startScreen" class="overlay">
+  <div class="panel">
+    <h1>Collision Course! 🛰️💥</h1>
+
+    <div class="instructions">
+      <p>
+        Pieces of orbital debris are predicted to pass near your satellite.
+        Your goal is to plan and carry out manoeuvres that prevent them from colliding.
+      </p>
+
+      <h3>Rules</h3>
+      <ul>
+        <li>The image shown will represent the different probabilities of collision resulting from manoeuvres of different sizes and directions at different times. </li>
+        <li>Each manouevre burns fuel. When you run out of fuel you will no longer be able to manoeuvre.</li>
+      </ul>
+    
+      <h3>Controls</h3>
+      <ul>
+        <li>The dot represents your current plan for the manoeuvre. You can move the dot using the following controls</li>
+        <li><b>Up arrow / Down arrow</b> → Adjust manoeuvre size and direction</li>
+        <li><b>Left arrow / Right arrow</b> → Adjust manoeuvre timing</li>
+        <li><b>Space</b> → Lock in manoeuvre plan</li>
+        <li><b>P</b> → Pause game</li>
+        <li><b>Q</b> → Quit game</li>
+      </ul>
+      <img src="MTP_image.jpg" />
+      <h3>Tips</h3>
+      <ul>
+        <li>Blue regions indicate low risk, yellow medium risk, and red high risk. </li>
+        <li>Set your planned manoeuvre time ahead of the NOW line. You can't plan a manoeuvre in the past.</li>
+        <li>Big manoeuvres conserve lower the risk of collision the most but use a lot of fuel.</li>
+        <li>Early manoeuvres typically lower the risk of collision more.</li>
+      </ul>
+
+    </div>
+
+    <div class="startControls">
+      <input id="playerName" type="text" placeholder="Enter your name" />
+      <button class="primaryBtn" id="beginBtn">Begin Mission</button>
+    </div>
+    <br>
+  </div>
+</div>
+<div id="gameOverScreen" class="overlay" style="display:none;">
+  <div class="panel">
+    <h1>Collision</h1>
+    <p id="gameOverMsg">Your satellite was hit.</p>
+
+    <div class="startControls">
+      <button class="primaryBtn" id="restartBtn">Back to Start</button>
+    </div>
+  </div>
+</div>
+<!-- Leaderboard overlay (top-right) -->
+<div id="leaderboard" class="leaderboard" aria-label="Leaderboard">
+  <div class="leaderboard__header">
+    <div class="leaderboard__title">Leaderboard</div>
+    <button id="leaderboardClear" class="leaderboard__clear" type="button">Clear</button>
+  </div>
+  <ol id="leaderboardList" class="leaderboard__list"></ol>
+  <div id="leaderboardEmpty" class="leaderboard__empty">No runs yet.</div>
+</div>
+<canvas id="c"></canvas>
+<script type="module" src="./main.js"></script>
+</body>
+</html>
