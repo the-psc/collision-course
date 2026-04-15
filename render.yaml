@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: collision-course
+    env: static
+    buildCommand: ""
+    staticPublishPath: .
